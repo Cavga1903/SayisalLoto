@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sayı Tahmin Oyunu</title>
+</head>
+<body>
+  <h1>Sayı Tahmin Oyunu</h1>
+  
+  <div>
+    <label for="guessInput">Tahmininizi Girin (1-49):</label>
+    <input type="number" id="guessInput" min="1" max="49">
+    <button id="guessButton" disabled>Tahmin Gir</button>
+    <button id="drawButton">Kurayı Çek</button>
+  </div>
+  
+  <div>
+    <h2>Tahminler</h2>
+    <div id="guesses"></div>
+  </div>
+  
+  <div>
+    <h2>Sonuç</h2>
+    <div id="results"></div>
+    <p id="numMatches"></p>
+  </div>
+  
+  <script>document.addEventListener("DOMContentLoaded", function () {
+    const guessInput = document.getElementById("guessInput");
+    const guessButton = document.getElementById("guessButton");
+    const drawButton = document.getElementById("drawButton");
+    const guessesDiv = document.getElementById("guesses");
+    const resultsDiv = document.getElementById("results");
+    const numMatches = document.getElementById("numMatches");
+  
+    let guesses = [];
+    let drawnNumbers = [];
+  
+    guessInput.addEventListener("input", function () {
+      const guess = parseInt(guessInput.value);
+      guessButton.disabled = !(guess >= 1 && guess <= 49);
+    });
+  
+    guessButton.addEventListener("click", function () {
+      const guess = parseInt(guessInput.value);
+      if (guessInput.value === "") {
+        alert("Lütfen bir tahmin girin.");
+        return;
+      }
+      
+      if (guesses.length < 6) {
+        if (!guesses.includes(guess)) {
+          guesses.push(guess);
+          guessesDiv.innerHTML = guesses.sort((a, b) => a - b).join(", ");
+          guessInput.value = "";
+        } else {
+          alert("Aynı tahmin bir kez girilebilir.");
+        }
+  
+        if (guesses.length === 6) {
+          guessButton.disabled = true;
+          drawButton.disabled = false;
+        }
+      } else {
+        alert("En fazla 6 tahmin girebilirsiniz.");
+      }
+    });
+  
+    drawButton.addEventListener("click", function () {
+      drawButton.disabled = true;
+  
+      drawnNumbers = generateRandomNumbers(6, 1, 49);
+      resultsDiv.innerHTML = drawnNumbers.join(", ");
+  
+      const matchedNumbers = getMatchedNumbers(guesses, drawnNumbers);
+      numMatches.textContent = `${matchedNumbers.length} sayı bilindi: ${matchedNumbers.join(", ")}`;
+    });
+  });
+  
+  function generateRandomNumbers(count, min, max) {
+    const numbers = new Set();
+  
+    while (numbers.size < count) {
+      const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+      numbers.add(randomNumber);
+    }
+  
+    return Array.from(numbers);
+  }
+  
+  function getMatchedNumbers(userNumbers, drawnNumbers) {
+    return userNumbers.filter((number) => drawnNumbers.includes(number));
+  }
+  
+  </script>
+</body>
+</html>
